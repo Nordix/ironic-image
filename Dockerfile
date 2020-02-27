@@ -1,7 +1,7 @@
 ## Build iPXE w/ IPv6 Support
 ## Note: we are pinning to a specific commit for reproducible builds.
 ## Updated as needed.
-FROM docker.io/centos:centos7 AS builder
+FROM docker.io/centos:centos8 AS builder
 RUN yum install -y gcc git make genisoimage xz-devel grub2 grub2-efi-x64-modules shim dosfstools mtools
 WORKDIR /tmp
 COPY . .
@@ -23,22 +23,35 @@ RUN dd bs=1024 count=2880 if=/dev/zero of=esp.img && \
       mkfs.msdos -F 12 -n 'ESP_IMAGE' ./esp.img && \
       mmd -i esp.img EFI && \
       mmd -i esp.img EFI/BOOT && \
-      grub2-mkimage -C xz -O x86_64-efi -p /boot/grub -o /tmp/grubx64.efi boot linux search normal configfile part_gpt btrfs ext2 fat iso9660 loopback test keystatus gfxmenu regexp probe efi_gop efi_uga all_video gfxterm font scsi echo read ls cat png jpeg halt reboot linuxefi && \
+      grub2-mkimage -C xz -O x86_64-efi -p /boot/grub -o /tmp/grubx64.efi boot linux search normal configfile part_gpt btrfs ext2 fat iso9660 loopback test keystatus gfxmenu regexp probe efi_gop efi_uga all_video gfxterm font scsi echo read ls cat png jpeg halt reboot && \
       mcopy -i esp.img -v /boot/efi/EFI/BOOT/BOOTX64.EFI ::EFI/BOOT && \
       mcopy -i esp.img -v /tmp/grubx64.efi ::EFI/BOOT && \
       mdir -i esp.img ::EFI/BOOT
 
 FROM docker.io/centos:centos8
 
-RUN dnf install -y python3 python3-requests && \
-    curl https://raw.githubusercontent.com/openstack/tripleo-repos/master/tripleo_repos/main.py | python3 - -b train current && \
+RUN dnf install -y gcc python3 python3-requests python3-devel && \
+    curl https://raw.githubusercontent.com/openstack/tripleo-repos/master/tripleo_repos/main.py | python3 - -b master current && \
     dnf update -y && \
-    dnf install -y python3-gunicorn openstack-ironic-api openstack-ironic-conductor crudini \
+    dnf install -y python3-gunicorn crudini OpenIPMI ipmitool \
         iproute dnsmasq httpd qemu-img iscsi-initiator-utils parted gdisk psmisc \
-        mariadb-server genisoimage python3-ironic-prometheus-exporter \
+        mariadb-server genisoimage \
         python3-jinja2 python3-sushy-oem-idrac && \
     dnf clean all && \
     rm -rf /var/cache/{yum,dnf}/*
+
+RUN /usr/bin/pip3 install pymysql
+RUN /usr/bin/pip3 install git+https://opendev.org/openstack/ironic.git@master
+
+RUN /usr/bin/pip3 install ironic-prometheus-exporter
+
+# Create soft links in order to avoid changing multiple files
+RUN /usr/bin/ln -s /usr/local/bin/ironic-api /usr/bin/ironic-api
+RUN /usr/bin/ln -s /usr/local/bin/ironic-api-wsgi /usr/bin/ironic-api-wsgi
+RUN /usr/bin/ln -s /usr/local/bin/ironic-conductor /usr/bin/ironic-conductor
+RUN /usr/bin/ln -s /usr/local/bin/ironic-dbsync /usr/bin/ironic-dbsync
+RUN /usr/bin/ln -s /usr/local/bin/ironic-rootwrap /usr/bin/ironic-rootwrap
+RUN /usr/bin/ln -s /usr/local/bin/ironic-status /usr/bin/ironic-status
 
 RUN mkdir -p /tftpboot
 COPY --from=builder /tmp/ipxe/src/bin/undionly.kpxe /tftpboot
@@ -47,6 +60,10 @@ COPY --from=builder /tmp/ipxe/src/bin-x86_64-efi/ipxe.efi /tftpboot
 
 COPY --from=builder /tmp/esp.img /tmp/uefi_esp.img
 
+# ./ironic.conf.dnf is copied from dnf's installation
+# It is added here b/c pip3 does not create it
+
+COPY ./ironic.conf.dnf /etc/ironic/ironic.conf
 COPY ./ironic.conf /tmp/ironic.conf
 RUN crudini --merge /etc/ironic/ironic.conf < /tmp/ironic.conf && \
     rm /tmp/ironic.conf
@@ -70,3 +87,4 @@ COPY ./inspector.ipxe /tmp/inspector.ipxe
 COPY ./dualboot.ipxe /tmp/dualboot.ipxe
 
 ENTRYPOINT ["/bin/runironic"]
+
