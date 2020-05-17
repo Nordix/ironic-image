@@ -8,13 +8,13 @@ function wait_for_interface_or_ip() {
     export IRONIC_IP=""
     until [ ! -z "${IRONIC_IP}" ]; do
       echo "Waiting for ${PROVISIONING_IP} to be configured on an interface"
-      export IRONIC_IP=$(ip -br addr show | grep "${PROVISIONING_IP}" | grep -Po "[^\s]+/[0-9]+" | sed -e 's%/.*%%' | head -n 1)
+      export IRONIC_IP=$(ip -br addr show | grep "${PROVISIONING_IP}" | grep -Po "[^\s]+/[0-9]+" | sed -e 's%/.*%%' | head -n 2)
       sleep 1
     done
   else
     until [ ! -z "${IRONIC_IP}" ]; do
       echo "Waiting for ${PROVISIONING_INTERFACE} interface to be configured"
-      export IRONIC_IP=$(ip -br addr show dev $PROVISIONING_INTERFACE | grep -Po "[^\s]+/[0-9]+" | grep -e "^fd" -e "\." | sed -e 's%/.*%%' | head -n 1)
+      export IRONIC_IP=$(ip -br addr show dev $PROVISIONING_INTERFACE | grep -Po "[^\s]+/[0-9]+" | grep -e "^fd" -e "\." | sed -e 's%/.*%%' | head -n 2)
       sleep 1
     done
   fi
