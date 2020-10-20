@@ -13,15 +13,35 @@ if [ ! -d "${DATADIR}/mysql" ]; then
     crudini --set "$MARIADB_CONF_FILE" mysqld innodb_log_buffer_size 512K
 
     # Config MariaDB to enable TLS
-    if [ -d "/certs" ] 
+    if [[  ${IRONIC_TLS_SETUP} == "true" ]]
     then
-      mkdir -p "${DATADIR}/certs/ca/"
+      if [[ ! -a "/certs/mariadb/tls.crt" ]]
+      then
+        echo "Certificate file not found "
+        exit 0
+      fi
+
+      if [[ ! -a "/certs/mariadb/tls.key" ]]
+      then
+        echo "Private key not found"
+        exit 0
+      fi
+      mkdir -p "${DATADIR}/certs/"
       cp "/certs/mariadb" "${DATADIR}/certs/" -r
-      cp "certs/ca/mariadb" "${DATADIR}/certs/ca/" -r
       crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl on
       crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_cert "${DATADIR}/certs/mariadb/tls.crt"
       crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_key "${DATADIR}/certs/mariadb/tls.key"
-      crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_ca "${DATADIR}/certs/ca/mariadb/tls.crt"
+
+      # If mTLS is enabled -> Uncomment the below section
+        # if [[ ! -a "/certs/ca/mariadb/tls.crt" ]]
+        # then
+        #   echo "CA certificate not found"
+        #   exit 0
+        # fi
+        # mkdir -p "${DATADIR}/certs/ca/"
+        # cp "certs/ca/mariadb" "${DATADIR}/certs/ca/" -r
+        # crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_ca "${DATADIR}/certs/ca/mariadb/tls.crt"
+
     fi
 
     mysql_install_db --datadir="$DATADIR"

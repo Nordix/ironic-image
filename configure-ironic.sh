@@ -123,11 +123,19 @@ EOF
     fi
 fi
 
+add_options_to_j2_config () {
+  if [[ "${IRONIC_TLS_SETUP}" == "true" ]]
+  then
+  crudini --set "/etc/ironic/ironic.conf.j2" Database connection "mysql+pymysql://ironic:{{ env.MARIADB_PASSWORD }}@127.0.0.1/ironic?charset=utf8&ssl=on&ssl_ca=/certs/ca/ironic/tls.crt"
+  fi
+}
+
 function render_j2_config () {
     python3 -c 'import os; import sys; import jinja2; sys.stdout.write(jinja2.Template(sys.stdin.read()).render(env=os.environ))' < /etc/ironic/ironic.conf.j2
 }
 
 # The original ironic.conf is empty, and can be found in ironic.conf_orig
+add_options_to_j2_config 
 render_j2_config > /etc/ironic/ironic.conf
 
 # Configure auth for clients
