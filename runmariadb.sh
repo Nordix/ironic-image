@@ -12,6 +12,18 @@ if [ ! -d "${DATADIR}/mysql" ]; then
     crudini --set "$MARIADB_CONF_FILE" mysqld innodb_buffer_pool_size 5M
     crudini --set "$MARIADB_CONF_FILE" mysqld innodb_log_buffer_size 512K
 
+    # Config MariaDB to enable TLS
+    if [ -d "/certs" ] 
+    then
+      mkdir -p "${DATADIR}/certs/ca/"
+      cp "/certs/mariadb" "${DATADIR}/certs/" -r
+      cp "certs/ca/mariadb" "${DATADIR}/certs/ca/" -r
+      crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl on
+      crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_cert "${DATADIR}/certs/mariadb/tls.crt"
+      crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_key "${DATADIR}/certs/mariadb/tls.key"
+      crudini --set "$MARIADB_CONF_FILE" mariadb-10.3 ssl_ca "${DATADIR}/certs/ca/mariadb/tls.crt"
+    fi
+
     mysql_install_db --datadir="$DATADIR"
 
     chown -R mysql "$DATADIR"
