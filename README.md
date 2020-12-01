@@ -36,6 +36,7 @@ The following environment variables can be passed in to customize run-time funct
 - HTTP_PORT - port used by http server (default 80)
 - DHCP_RANGE - dhcp range to use for provisioning (default 172.22.0.10-172.22.0.100)
 - MARIADB_PASSWORD - The database password
+- IRONIC_API_BEHIND_WSGI - Run ironic-api as a WSGI application. Can be true or false (default: true)
 - OS_<section>_\_<name>=<value> - This format can be used to set arbitary ironic config options
 
 The ironic configuration can be overridden by various environment variables. The following can serve as an example:

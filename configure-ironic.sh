@@ -11,6 +11,8 @@ export IRONIC_INSPECTOR_INSECURE=${IRONIC_INSPECTOR_INSECURE:-$IRONIC_INSECURE}
 
 export MARIADB_CACERT_FILE=/certs/ca/mariadb/tls.crt
 
+export IRONIC_API_BEHIND_WSGI=${IRONIC_API_BEHIND_WSGI:-"true"}
+
 mkdir -p /certs/ironic
 mkdir -p /certs/ironic-inspector
 mkdir -p /certs/ca/ironic
@@ -104,7 +106,6 @@ if [ -n "${HTTP_BASIC_HTPASSWD}" ]; then
     fi
 fi
 
-
 # When running both API and Conductor in the same container, we'll try to get the credentials
 # from /auth/ironic-rpc/auth-config if present, or generate it
 if [ "${IRONIC_DEPLOYMENT}" == "Combined" ]; then
@@ -153,7 +154,14 @@ IRONIC_CONFIG_OPTIONS="--config-file /etc/ironic/ironic.conf"
 configure_client_basic_auth() {
     local auth_config_file="/auth/$1/auth-config"
     if [ -f ${auth_config_file} ]; then
+      if [[ ${IRONIC_API_BEHIND_WSGI} == "true" ]]
+      then
+        # Merge configurations in the "auth" directory into the default ironic configuration file because there is no way to choose the configuration file 
+        # when running the api as a WSGI app.
+        crudini --merge "/etc/ironic/ironic.conf" < ${auth_config_file} 
+      else
         IRONIC_CONFIG_OPTIONS+=" --config-file ${auth_config_file}"
+      fi
     fi
 }
 

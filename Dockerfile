@@ -44,6 +44,8 @@ COPY --from=builder /tmp/ipxe/src/bin/undionly.kpxe /tmp/ipxe/src/bin-x86_64-efi
 COPY --from=builder /tmp/esp.img /tmp/uefi_esp.img
 
 COPY ./ironic.conf.j2 /etc/ironic/ironic.conf.j2
+RUN chown ironic:ironic /var/log/ironic && \
+    rm /etc/httpd/conf.d/ssl.conf # This file is generated after installing mod_ssl and it affects our configuration
 
 COPY ./runironic-api.sh /bin/runironic-api
 COPY ./runironic-conductor.sh /bin/runironic-conductor
@@ -54,6 +56,8 @@ COPY ./runmariadb.sh /bin/runmariadb
 COPY ./configure-ironic.sh /bin/configure-ironic.sh
 COPY ./ironic-common.sh /bin/ironic-common.sh
 COPY ./runlogwatch.sh /bin/runlogwatch.sh
+COPY ./apache2-ironic-api.conf.j2 /etc/httpd-ironic-api.conf.j2
+COPY ./apache2-ironic-conductor.conf.j2 /etc/httpd-ironic-conductor.conf.j2
 
 # TODO(dtantsur): remove this script when we stop supporting running both
 # API and conductor processes via one entry point.
