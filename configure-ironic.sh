@@ -27,7 +27,6 @@ fi
 
 . /bin/ironic-common.sh
 
-export HTTP_PORT=${HTTP_PORT:-"80"}
 export MARIADB_PASSWORD=${MARIADB_PASSWORD:-"change_me"}
 # TODO(dtantsur): remove the explicit default once we get
 # https://review.opendev.org/761185 in the repositories

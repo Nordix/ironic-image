@@ -11,6 +11,10 @@ if [[ ! -z ${EXTRA_PKGS_LIST:-} ]]; then
         dnf --setopt=install_weak_deps=False install -y $(cat /tmp/${EXTRA_PKGS_LIST})
     fi
 fi
+
+# TODO: Delete the below line of code after the PR https://github.com/metal3-io/baremetal-operator/pull/728 go in
+dnf install -y net-tools
+
 dnf clean all
 rm -rf /var/cache/{yum,dnf}/*
 if [[ ! -z ${PATCH_LIST:-} ]]; then
