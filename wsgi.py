@@ -645,6 +645,7 @@ class HttpProtocol(BaseHTTPServer.BaseHTTPRequestHandler):
 
             if self.server.log_output:
                 client_host, client_port = self.get_client_address()
+                print("THIS IS THE CLIENT PORT IN THE INFO (HOPEFULLY): ", client_host, client_port, self.requestline, length[0], self.log_date_time_string())
 
                 self.server.log.info(self.server.log_format % {
                     'client_ip': client_host,
