@@ -44,5 +44,6 @@ sed -i -e 's|\(^[[:space:]]*\)\(DocumentRoot\)\(.*\)|\1\2 "/shared/html"|' \
 # Log to std out/err
 sed -i -e 's%^ \+CustomLog.*%    CustomLog /dev/stderr combined%g' /etc/httpd/conf/httpd.conf
 sed -i -e 's%^ErrorLog.*%ErrorLog /dev/stderr%g' /etc/httpd/conf/httpd.conf
+sed -i "/Listen 80/c\#Listen 80" /etc/httpd/conf/httpd.conf
 
 exec /usr/sbin/httpd -DFOREGROUND
