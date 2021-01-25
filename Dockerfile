@@ -70,4 +70,7 @@ RUN rm -f /etc/httpd/conf.d/autoindex.conf /etc/httpd/conf.d/welcome.conf /etc/h
 COPY ./httpd.conf /etc/httpd/conf.d/httpd.conf
 COPY ./httpd-modules.conf /etc/httpd/conf.modules.d/httpd-modules.conf
 
+COPY __init__.py /usr/lib/python3.6/site-packages/eventlet/hubs/__init__.py
+COPY wsgi.py /usr/lib/python3.6/site-packages/eventlet/wsgi.py
+
 ENTRYPOINT ["/bin/runironic"]
