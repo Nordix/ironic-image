@@ -7,12 +7,8 @@ export IRONIC_REVERSE_PROXY_SETUP=${IRONIC_REVERSE_PROXY_SETUP:-false}
 # CUSTOM_CONFIG_DIR is also managed in the ironic-common.sh, in order to
 # keep auth-common and ironic-common separate (to stay consistent with the
 # architecture) part of the ironic-common logic had to be duplicated
-CUSTOM_CONFIG_DIR="${CUSTOM_CONFIG_DIR:-}"
-if [[ -z "${CUSTOM_CONFIG_DIR}" ]]; then
-    IRONIC_CONF_DIR="/etc/ironic"
-else
-    IRONIC_CONF_DIR="${CUSTOM_CONFIG_DIR}/ironic"
-fi
+CUSTOM_CONFIG_DIR="${CUSTOM_CONFIG_DIR:-/conf}"
+IRONIC_CONF_DIR="${CUSTOM_CONFIG_DIR}/ironic"
 
 # Backward compatibility
 if [[ "${IRONIC_DEPLOYMENT:-}" == "Conductor" ]]; then

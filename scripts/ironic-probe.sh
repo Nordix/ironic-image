@@ -19,4 +19,5 @@ else
         PROBE_URL="${IRONIC_BASE_URL}"
 fi
 
+# shellcheck disable=SC2086
 curl -sSf ${PROBE_CURL_ARGS} "${PROBE_URL}"

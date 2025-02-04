@@ -62,7 +62,7 @@ write_htpasswd_files
 
 # Render httpd TLS configuration for /shared/html/<redifsh;ilo>
 if [[ "$IRONIC_VMEDIA_TLS_SETUP" == "true" ]]; then
-    render_j2_config "/etc/httpd-vmedia.conf.j2" \
+    render_j2_config "/tmp/httpd-vmedia.conf.j2" \
         "${HTTPD_CONF_DIR_D}/vmedia.conf"
 fi
 
@@ -70,7 +70,7 @@ fi
 if [[ "$IPXE_TLS_SETUP" == "true" ]]; then
     mkdir -p /shared/html/custom-ipxe
     chmod 0777 /shared/html/custom-ipxe
-    render_j2_config "/etc/httpd-ipxe.conf.j2" "${HTTPD_CONF_DIR_D}/ipxe.conf"
+    render_j2_config "/tmp/httpd-ipxe.conf.j2" "${HTTPD_CONF_DIR_D}/ipxe.conf"
     cp "${IPXE_CUSTOM_FIRMWARE_DIR}/undionly.kpxe" \
        "${IPXE_CUSTOM_FIRMWARE_DIR}/snponly.efi" \
        "/shared/html/custom-ipxe"

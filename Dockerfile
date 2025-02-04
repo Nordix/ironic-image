@@ -31,7 +31,7 @@ ARG PATCH_LIST
 
 # build arguments for source build customization
 ARG UPPER_CONSTRAINTS_FILE=upper-constraints.txt
-ARG IRONIC_SOURCE=bugfix/27.0
+ARG IRONIC_SOURCE=https://github.com/Nordix/ironic/tree/custom_reboot_bugfix_27.0.0
 ARG IRONIC_LIB_SOURCE
 ARG SUSHY_SOURCE
 
@@ -55,16 +55,16 @@ COPY --from=ironic-builder /tmp/esp.img /tmp/uefi_esp.img
 
 COPY ironic-config/ironic.conf.j2 /etc/ironic/
 COPY ironic-config/inspector.ipxe.j2 ironic-config/httpd-ironic-api.conf.j2  /tmp/
-COPY ironic-config/ipxe_config.template /conf/ipxe
+COPY ironic-config/ipxe_config.template /tmp/ipxe_config.template
 
 # DNSMASQ
-COPY ironic-config/dnsmasq.conf.j2 /etc/
+COPY ironic-config/dnsmasq.conf.j2 /tmp/
 
 # Custom httpd config, removes all but the bare minimum needed modules
 COPY ironic-config/httpd.conf.j2 /etc/httpd/conf/
 COPY ironic-config/httpd-modules.conf /etc/httpd/conf.modules.d/
-COPY ironic-config/apache2-vmedia.conf.j2 /etc/httpd-vmedia.conf.j2
-COPY ironic-config/apache2-ipxe.conf.j2 /etc/httpd-ipxe.conf.j2
+COPY ironic-config/apache2-vmedia.conf.j2 /tmp/httpd-vmedia.conf.j2
+COPY ironic-config/apache2-ipxe.conf.j2 /tmp/httpd-ipxe.conf.j2
 
 # DATABASE
 RUN mkdir -p /var/lib/ironic && \
