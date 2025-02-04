@@ -22,11 +22,12 @@ export DNSMASQ_DATA_DIR="${CUSTOM_DATA_DIR}/dnsmasq"
 export LOCAL_DB_URI="sqlite:///${IRONIC_DB_DIR}/ironic.sqlite"
 export IRONIC_GEN_CERT_DIR="${CUSTOM_DATA_DIR}/auto_gen_certs"
 export IPXE_CONF_DIR="${CUSTOM_CONFIG_DIR}/ipxe"
+export IRONIC_TMP_DATA_DIR="${CUSTOM_DATA_DIR}/tmp"
 
 mkdir -p "${IRONIC_CONF_DIR}" "${PROBE_CONF_DIR}" "${HTTPD_CONF_DIR}" \
     "${HTTPD_CONF_DIR_D}" "${DNSMASQ_CONF_DIR}" "${DNSMASQ_TEMP_DIR}" \
     "${IRONIC_DB_DIR}" "${IRONIC_GEN_CERT_DIR}" "${IPXE_CONF_DIR}" \
-    "${DNSMASQ_DATA_DIR}"
+    "${DNSMASQ_DATA_DIR}" "${IRONIC_TMP_DATA_DIR}"
 
 get_provisioning_interface()
 {
