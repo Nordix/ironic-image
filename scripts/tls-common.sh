@@ -11,6 +11,9 @@ export IRONIC_VMEDIA_SSL_PROTOCOL=${IRONIC_VMEDIA_SSL_PROTOCOL:-"ALL"}
 export IRONIC_VMEDIA_CERT_FILE=/certs/vmedia/tls.crt
 export IRONIC_VMEDIA_KEY_FILE=/certs/vmedia/tls.key
 
+export IRONIC_HTTPD_CERT_FILE=/certs/httpd/tls.crt
+export IRONIC_HTTPD_KEY_FILE=/certs/httpd/tls.key
+
 export IPXE_CERT_FILE=/certs/ipxe/tls.crt
 export IPXE_KEY_FILE=/certs/ipxe/tls.key
 
@@ -21,9 +24,10 @@ export MARIADB_CACERT_FILE=/certs/ca/mariadb/tls.crt
 export IPXE_TLS_PORT="${IPXE_TLS_PORT:-8084}"
 
 mkdir -p /certs/ironic
-mkdir -p /certs/ca/ironic
-mkdir -p /certs/ipxe
-mkdir -p /certs/vmedia
+mkdir /certs/ca/ironic
+mkdir /certs/ipxe
+mkdir /certs/vmedia
+mkdir /certs/httpd
 
 if [[ -f "$IRONIC_CERT_FILE" ]] && [[ ! -f "$IRONIC_KEY_FILE" ]]; then
     echo "Missing TLS Certificate key file $IRONIC_KEY_FILE"
@@ -49,6 +53,15 @@ if [[ -f "$IPXE_CERT_FILE" ]] && [[ ! -f "$IPXE_KEY_FILE" ]]; then
 fi
 if [[ ! -f "$IPXE_CERT_FILE" ]] && [[ -f "$IPXE_KEY_FILE" ]]; then
     echo "Missing TLS Certificate file $IPXE_CERT_FILE"
+    exit 1
+fi
+
+if [[ -f "$IRONIC_HTTPD_CERT_FILE" ]] && [[ ! -f "$IRONIC_HTTPD_KEY_FILE" ]]; then
+    echo "Missing TLS Certificate key file $IRONIC_HTTPD_KEY_FILE"
+    exit 1
+fi
+if [[ ! -f "$IRONIC_HTTPD_CERT_FILE" ]] && [[ -f "$IRONIC_HTTPD_KEY_FILE" ]]; then
+    echo "Missing TLS Certificate file $IRONIC_HTTPD_CERT_FILE"
     exit 1
 fi
 
@@ -94,6 +107,12 @@ if [[ -f "$MARIADB_CACERT_FILE" ]]; then
     export MARIADB_TLS_ENABLED="true"
 else
     export MARIADB_TLS_ENABLED="false"
+fi
+
+if [[ -f "$IRONIC_HTTPD_CERT_FILE" ]]; then
+    export IRONIC_HTTPD_TLS_SETUP="true"
+else
+    export IRONIC_HTTPD_TLS_SETUP="false"
 fi
 
 configure_restart_on_certificate_update()

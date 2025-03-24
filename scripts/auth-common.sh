@@ -63,16 +63,17 @@ configure_json_rpc_auth()
         exit 1
     fi
 
+    export IRONIC_RPC_HTPASSWD_FILE="${IRONIC_HTPASSWD_FILE}-rpc"
     if [[ -z "${IRONIC_RPC_HTPASSWD}" ]]; then
         if [[ -f "${username_file}" ]] && [[ -f "${password_file}" ]]; then
-            htpasswd -c -i -B "${IRONIC_HTPASSWD_FILE}-rpc" "$(<${username_file})" <"${password_file}"
+            htpasswd -c -i -B "${IRONIC_RPC_HTPASSWD_FILE}" "$(<${username_file})" <"${password_file}"
         else
             echo "FATAL: enabling JSON RPC requires authentication"
             echo "HINT: mount a secret with either username and password or htpasswd under /auth/ironic-rpc"
             exit 1
         fi
     else
-        printf "%s\n" "${IRONIC_RPC_HTPASSWD}" > "${IRONIC_HTPASSWD_FILE}-rpc"
+        printf "%s\n" "${IRONIC_RPC_HTPASSWD}" > "${IRONIC_RPC_HTPASSWD_FILE}"
     fi
 }
 
