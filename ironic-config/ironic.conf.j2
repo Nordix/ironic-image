@@ -5,12 +5,12 @@ default_deploy_interface = direct
 default_inspect_interface = agent
 default_network_interface = noop
 enabled_bios_interfaces = no-bios,redfish,idrac-redfish,irmc,ilo
-enabled_boot_interfaces = ipxe,ilo-ipxe,pxe,ilo-pxe,fake,redfish-virtual-media,idrac-redfish-virtual-media,ilo-virtual-media,redfish-https
+enabled_boot_interfaces = ipxe,ilo-ipxe,pxe,ilo-pxe,fake,redfish-virtual-media,idrac-redfish-virtual-media,ilo-virtual-media,redfish-https, redfish-wakeup, ipmi-wakeup
 enabled_deploy_interfaces = direct,fake,ramdisk,custom-agent
 enabled_firmware_interfaces = no-firmware,fake,redfish
 # NOTE(dtantsur): when changing this, make sure to update the driver
 # dependencies in Dockerfile.
-enabled_hardware_types = ipmi,idrac,irmc,fake-hardware,redfish,manual-management,ilo,ilo5
+enabled_hardware_types = ipmi,idrac,irmc,fake-hardware,redfish,manual-management,ilo,ilo5,redfish-wakeup,ipmi-wakeup
 enabled_inspect_interfaces = agent,irmc,fake,redfish,ilo
 enabled_management_interfaces = ipmitool,irmc,fake,redfish,idrac-redfish,ilo,ilo5,noop
 enabled_network_interfaces = noop

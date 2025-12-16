@@ -53,6 +53,8 @@ fi
 
 python3.12 -m pip install --no-cache-dir --ignore-installed --prefix /usr -r "${IRONIC_PKG_LIST_FINAL}" -c "${UPPER_CONSTRAINTS_PATH}"
 
+python3.12 -m pip install --no-cache-dir --ignore-installed --prefix /usr "/sources/ironic_wakeup_plugin" -c "${UPPER_CONSTRAINTS_PATH}"
+
 # ironic system configuration
 mkdir -p /var/log/ironic /var/lib/ironic
 getent group ironic > /dev/null || groupadd -r ironic -g "${IRONIC_GID}"

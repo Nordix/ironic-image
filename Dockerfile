@@ -68,6 +68,8 @@ COPY ironic-config/httpd-modules.conf /etc/httpd/conf.modules.d/
 COPY ironic-config/apache2-vmedia.conf.j2 /templates/httpd-vmedia.conf.j2
 COPY ironic-config/apache2-ipxe.conf.j2 /templates/httpd-ipxe.conf.j2
 
+RUN dnf install -y openssh-clients
+
 # DATABASE
 RUN mkdir -p /var/lib/ironic && \
      sqlite3 /var/lib/ironic/ironic.sqlite "pragma journal_mode=wal" && \
